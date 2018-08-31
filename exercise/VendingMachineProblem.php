@@ -1,6 +1,4 @@
 
-
-
 <head>
 <meta charset="UTF-8">
 </head>
@@ -9,7 +7,7 @@
     $ebits = ini_get('error_reporting');
     error_reporting($ebits ^ E_NOTICE);
 
-    //input  
+    //input  edit
    $coin=$_POST['coin'];
    $product=$_POST['product'];
 
@@ -30,32 +28,48 @@ $i++;
 $Total = $temp ;
 //echo $Total."\n";
 
+
 // get api
-$content =     file_get_contents("http://www.mocky.io/v2/5af11f8c3100004d0096c7ed");
-
+$content =     file_get_contents("http://localhost/test/API.php?item=number");
 $result  = json_decode($content);
+$itemtotal = $result->total ;
+//echo $itemtotal;
 
+//  Name product edit with API
+$i = 0 ;$l = 0;
+while ($product[$i] != null ) {
+  if($product[$i] !=' '){$NameproductAPI[$l] = $product[$i]; $l++; }else{ $NameproductAPI[$l] = '%'; $l++; $NameproductAPI[$l] = '2'; $l++; $NameproductAPI[$l] = '0'; $l++; }
+  $i++;
+}
+
+//echo implode("",$NameproductAPI);
+$content =     file_get_contents("http://localhost/test/API.php?name=".implode("",$NameproductAPI));
+$result  = json_decode($content);
+//echo $result->name;
 
 //get product
 $i = 0 ;
 $Gotitem = null ;
 $Selected = null ;
 $NumArr = null ;
-while ($i < $result->total ) {
-   
-  if( $result->data[$i]->name  == $product  ){
-    if ( ( $result->data[$i]->price  <= $Total ) && ($result->data[$i]->in_stock === true ) )
+while ($i < $itemtotal) {
+
+  if( $result->name  == $product  ){
+  
+    if ( ( $result->price  <= $Total ) && ($result->in_stock === true ) )
     {
-      //echo "T1 "; 
+     // echo "T1 "; 
       $Gotitem = true ;
       $Selected = $product ;
       $NumArr = $i;
+      break;
 
     }else{
       //echo "F2 ";
       $Gotitem = false ;
       $Selected = $product ;
       $NumArr = $i;
+      break;
     }
   }
 
@@ -71,7 +85,7 @@ if($i == 6 && $Gotitem == null && $Selected == null)
 
 ////// Change //////
 if($Gotitem == true){
-    $TotalChange = $Total - ($result->data[$NumArr]->price) ;
+    $TotalChange = $Total - ($result->price) ;
     //echo $TotalChange;
   }else{ // Gotitem is false Selected is -
     $TotalChange = $Total ;
@@ -130,5 +144,16 @@ function myFunction() {
     alert("<?php echo $StringChangeCoin ?>");
 }
 </script>
-<!-- wisanu futemwong -->
 
+<?php
+
+
+
+//$content = file_get_contents("http://localhost/test/API.php?name=".$product);
+
+//$result  = json_decode($content);
+
+//print_r($result );
+//echo $result ->name;
+?>
+<!-- wisanu Futemwong -->
